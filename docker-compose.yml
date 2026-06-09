@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mediatracker
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "80:80"
+    depends_on:
+      - auth-service
+      - media-service
+      - frontend
+
+  auth-service:
+    build: ./auth-service
+    environment:
+      - PORT=3001
+      - DB_HOST=db
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - DB_NAME=mediatracker
+    depends_on:
+      - db
+
+  media-service:
+    build: ./media-service
+    environment:
+      - PORT=3002
+      - DB_HOST=db
+      - DB_USER=postgres
+      - DB_PASSWORD=password
+      - DB_NAME=mediatracker
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173" # For direct local access during dev
+
+volumes:
+  postgres_data:
