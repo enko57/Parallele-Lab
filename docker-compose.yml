@@ -13,7 +13,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   api-gateway:
-    build: ./api-gateway
+    build: ./backend/api-gateway
     ports:
       - "80:80"
     depends_on:
@@ -22,7 +22,7 @@ services:
       - frontend
 
   auth-service:
-    build: ./auth-service
+    build: ./backend/auth-service
     environment:
       - PORT=3001
       - DB_HOST=db
@@ -33,7 +33,7 @@ services:
       - db
 
   media-service:
-    build: ./media-service
+    build: ./backend/media-service
     environment:
       - PORT=3002
       - DB_HOST=db
