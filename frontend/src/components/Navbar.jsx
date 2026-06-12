@@ -1,10 +1,21 @@
 import { Link, useSearchParams } from 'react-router-dom';
-import { Search, User, ListPlus } from 'lucide-react';
+import { Search, ListPlus } from 'lucide-react';
 import '../App.css';
 
 const Navbar = () => {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const currentType = searchParams.get('type') || 'all';
+  const query = searchParams.get('q') || '';
+
+  const handleSearchChange = (e) => {
+    const q = e.target.value;
+    if (q) {
+      searchParams.set('q', q);
+    } else {
+      searchParams.delete('q');
+    }
+    setSearchParams(searchParams);
+  };
 
   return (
     <nav className="navbar glass">
@@ -24,9 +35,23 @@ const Navbar = () => {
       </div>
       
       <div className="nav-actions">
-        <Search size={18} style={{ cursor: 'pointer' }} />
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-          <User size={18} />
+        <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(255, 255, 255, 0.05)', padding: '6px 12px', borderRadius: '8px' }}>
+          <Search size={16} style={{ color: 'var(--text-secondary)' }} />
+          <input 
+            type="text" 
+            placeholder="Filter entries..." 
+            value={query}
+            onChange={handleSearchChange}
+            style={{ 
+              background: 'transparent', 
+              border: 'none', 
+              color: '#fff', 
+              outline: 'none', 
+              marginLeft: '8px',
+              fontSize: '0.9rem',
+              width: '150px'
+            }}
+          />
         </div>
       </div>
     </nav>

@@ -45,8 +45,7 @@ services:
 
   frontend:
     build: ./frontend
-    ports:
-      - "5173:5173" # For direct local access during dev
+    # Port 5173 mapping removed so it doesn't conflict with your local 'npm run dev'
 
 volumes:
   postgres_data:

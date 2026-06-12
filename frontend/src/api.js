@@ -1,41 +1,38 @@
-const STORAGE_KEY = 'mediatracker_data_v2';
-
-const INITIAL_DATA = [
-  { id: 1, title: 'Steins;Gate', type: 'Anime', status: 'completed', score: 9.8, progress: '24/24', posterUrl: 'https://cdn.myanimelist.net/images/anime/5/73199.jpg' },
-  { id: 2, title: 'The Legend of Zelda: Breath of the Wild', type: 'Game', status: 'watching', score: 9.5, progress: '65h', posterUrl: 'https://media.rawg.io/media/games/10d/10d19e52e5e8415d16a4d344fe711874.jpg' },
-  { id: 3, title: 'Dune (Book 1)', type: 'Book', status: 'planned', score: '-', progress: '0/896', posterUrl: 'https://covers.openlibrary.org/b/id/10521270-L.jpg' },
-  { id: 4, title: 'Breaking Bad', type: 'Series', status: 'completed', score: 10, progress: '62/62', posterUrl: 'https://image.tmdb.org/t/p/w500/ggFHVNu6YYI5L9pCfOacjizRGt.jpg' },
-  { id: 5, title: 'Cyberpunk 2077', type: 'Game', status: 'completed', score: 8.5, progress: '100%', posterUrl: 'https://media.rawg.io/media/games/26d/26d440e0ee42d198d022b7a9de7ec405.jpg' },
-  { id: 6, title: 'One Piece', type: 'Anime', status: 'watching', score: 8.8, progress: '1074/?', posterUrl: 'https://cdn.myanimelist.net/images/anime/6/73245.jpg' },
-  { id: 7, title: 'Inception', type: 'Movie', status: 'completed', score: 9.0, progress: '1/1', posterUrl: 'https://image.tmdb.org/t/p/w500/9gk7adZA2GLz2SXGieGTXC6111.jpg' }
-];
-
-if (!localStorage.getItem(STORAGE_KEY)) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_DATA));
-}
+const API_BASE_URL = 'http://localhost:80/api/media';
 
 export const fetchTrackerData = async () => {
-  const data = localStorage.getItem(STORAGE_KEY);
-  return data ? JSON.parse(data) : [];
+  try {
+    const res = await fetch(API_BASE_URL);
+    if (!res.ok) return [];
+    return await res.json();
+  } catch (e) {
+    console.error("Backend not reachable:", e);
+    return [];
+  }
 };
 
 export const addMedia = async (entry) => {
-  const data = await fetchTrackerData();
-  const newEntry = { ...entry, id: Date.now() };
-  localStorage.setItem(STORAGE_KEY, JSON.stringify([newEntry, ...data]));
-  return newEntry;
+  const res = await fetch(API_BASE_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(entry)
+  });
+  if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+  return await res.json();
 };
 
 export const updateMedia = async (id, updates) => {
-  const data = await fetchTrackerData();
-  const updatedData = data.map(item => String(item.id) === String(id) ? { ...item, ...updates } : item);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedData));
+  await fetch(`${API_BASE_URL}/${id}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(updates)
+  });
 };
 
 export const deleteMedia = async (id) => {
-  const data = await fetchTrackerData();
-  const filteredData = data.filter(item => String(item.id) !== String(id));
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(filteredData));
+  await fetch(`${API_BASE_URL}/${id}`, {
+    method: 'DELETE'
+  });
 };
 
 // External API Search Integration

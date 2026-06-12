@@ -36,9 +36,13 @@ const AddMediaModal = ({ onClose, onAdd }) => {
       score: '-',
       progress: initialProgress
     };
-    await addMedia(newEntry);
-    onAdd();
-    onClose();
+    try {
+      await addMedia(newEntry);
+      onAdd();
+      onClose();
+    } catch (e) {
+      alert("Fehler beim Speichern! Läuft das Backend (Docker)? Error: " + e.message);
+    }
   };
 
   const handleManualAdd = async (e) => {
@@ -52,9 +56,13 @@ const AddMediaModal = ({ onClose, onAdd }) => {
       score: '-',
       progress: '0'
     };
-    await addMedia(newEntry);
-    onAdd();
-    onClose();
+    try {
+      await addMedia(newEntry);
+      onAdd();
+      onClose();
+    } catch (e) {
+      alert("Fehler beim Speichern! Läuft das Backend (Docker)? Error: " + e.message);
+    }
   };
 
   return (

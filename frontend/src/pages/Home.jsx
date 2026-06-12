@@ -30,8 +30,13 @@ const Home = () => {
     }
   };
 
-  // 1. Filter by Type (Tabs in Navbar)
-  const filteredByType = data.filter(item => currentType === 'all' || item.type === currentType);
+  // 1. Filter by Type (Tabs in Navbar) and Search Query
+  const searchQuery = searchParams.get('q') || '';
+  const filteredByType = data.filter(item => {
+    const matchesType = currentType === 'all' || item.type === currentType;
+    const matchesQuery = item.title.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesType && matchesQuery;
+  });
 
   // 2. Filter by Status
   const watching = filteredByType.filter(m => m.status === 'watching');
